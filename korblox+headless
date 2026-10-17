@@ -1,0 +1,44 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local function applyAvatar(character)
+    -- HEADLESS
+    local head = character:WaitForChild("Head", 10)
+    if head then
+        head.Transparency = 1
+
+        for _, obj in ipairs(head:GetDescendants()) do
+            if obj:IsA("Decal") or obj:IsA("Texture") then
+                obj.Transparency = 1
+            elseif obj:IsA("SpecialMesh") then
+                obj.Scale = Vector3.zero
+            end
+        end
+    end
+
+    -- KORBLOX
+    local leg = character:WaitForChild("Right Leg", 10)
+    if leg and not leg:FindFirstChild("KorbloxMesh") then
+        for _, obj in ipairs(leg:GetChildren()) do
+            if obj:IsA("SpecialMesh") then
+                obj:Destroy()
+            end
+        end
+
+        local mesh = Instance.new("SpecialMesh")
+        mesh.Name = "KorbloxMesh"
+        mesh.MeshId = "rbxassetid://902942096"
+        mesh.TextureId = "rbxassetid://902843398"
+        mesh.Offset = Vector3.new(0, 0.7, 0)
+        mesh.Parent = leg
+    end
+end
+
+if player.Character then
+    task.spawn(applyAvatar, player.Character)
+end
+
+player.CharacterAdded:Connect(function(character)
+    task.wait(0.5)
+    applyAvatar(character)
+end)
